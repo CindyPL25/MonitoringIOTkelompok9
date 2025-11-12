@@ -1,0 +1,303 @@
+<!-- Dashboard Section -->
+<div id="view-dashboard" class="view">
+    <!-- Alert Banner -->
+    <div class="alert-banner warning">
+        <div class="alert-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="alert-content">
+            <h3>Status Waspada</h3>
+            <p>Sistem mendeteksi curah hujan tinggi dan kelembaban tanah meningkat. Waspada potensi tanah longsor.</p>
+        </div>
+        <button class="alert-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <!-- Cards Grid -->
+    <div class="section-title">
+        <h3>Data Sensor Real-time</h3>
+        <p>Informasi terkini dari sensor lingkungan</p>
+    </div>
+    <div class="cards-grid">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-cloud-rain"></i>
+                    Curah Hujan
+                </div>
+                <div class="card-menu">
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            <div class="card-value"><span class="value">45.2</span> <span class="unit">mm</span></div>
+            <div class="card-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill warning" style="width: 75%"></div>
+                </div>
+                <div class="progress-label">Tinggi</div>
+            </div>
+            <div class="card-footer">
+                <div class="update-time">
+                    <i class="far fa-clock"></i>
+                    Update: 2 menit lalu
+                </div>
+                <div class="status-badge warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    WASPADA
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-seedling"></i>
+                    Kelembaban Tanah
+                </div>
+                <div class="card-menu">
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            <div class="card-value"><span class="value">78</span> <span class="unit">%</span></div>
+            <div class="card-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill warning" style="width: 78%"></div>
+                </div>
+                <div class="progress-label">Tinggi</div>
+            </div>
+            <div class="card-footer">
+                <div class="update-time">
+                    <i class="far fa-clock"></i>
+                    Update: 2 menit lalu
+                </div>
+                <div class="status-badge warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    WASPADA
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-mountain"></i>
+                    Kemiringan Tanah
+                </div>
+                <div class="card-menu">
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            <div class="card-value"><span class="value">12</span> <span class="unit">°</span></div>
+            <div class="card-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill safe" style="width: 40%"></div>
+                </div>
+                <div class="progress-label">Normal</div>
+            </div>
+            <div class="card-footer">
+                <div class="update-time">
+                    <i class="far fa-clock"></i>
+                    Update: 2 menit lalu
+                </div>
+                <div class="status-badge safe">
+                    <i class="fas fa-check-circle"></i>
+                    AMAN
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-thermometer-half"></i>
+                    Suhu Udara
+                </div>
+                <div class="card-menu">
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            <div class="card-value"><span class="value">28</span> <span class="unit">°C</span></div>
+            <div class="card-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill safe" style="width: 56%"></div>
+                </div>
+                <div class="progress-label">Normal</div>
+            </div>
+            <div class="card-footer">
+                <div class="update-time">
+                    <i class="far fa-clock"></i>
+                    Update: 2 menit lalu
+                </div>
+                <div class="status-badge safe">
+                    <i class="fas fa-check-circle"></i>
+                    NORMAL
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Charts Section -->
+    <div class="section-title">
+        <h3>Analisis Data Sensor</h3>
+        <p>Grafik dan visualisasi data untuk pemantauan tren</p>
+    </div>
+    <div class="charts-section">
+        <div class="chart-container large">
+            <div class="chart-header">
+                <div class="chart-title">Data Sensor 24 Jam Terakhir</div>
+                <div class="chart-actions">
+                    <button class="chart-action-btn active">24 Jam</button>
+                    <button class="chart-action-btn">7 Hari</button>
+                    <button class="chart-action-btn">30 Hari</button>
+                </div>
+            </div>
+            <canvas id="sensorChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Status Sistem</div>
+            </div>
+            <canvas id="statusChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Prediksi Risiko Longsor</div>
+            </div>
+            <canvas id="riskChart"></canvas>
+        </div>
+    </div>
+    <!-- Alert Section -->
+    <div class="section-title">
+        <h3>Peringatan Dini</h3>
+        <p>Indikator dan notifikasi untuk deteksi dini tanah longsor</p>
+    </div>
+    <div class="alert-section">
+        <div class="alert-card danger">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="alert-content">
+                <h4>Peringatan Tinggi</h4>
+                <p>Kombinasi curah hujan tinggi dan kelembaban tanah yang meningkat berpotensi menyebabkan tanah longsor dalam 24-48 jam ke depan.</p>
+            </div>
+            <div class="alert-actions">
+                <button class="btn btn-outline">Detail</button>
+                <button class="btn btn-primary">Tindakan</button>
+            </div>
+        </div>
+        <div class="alert-indicators">
+            <div class="indicator">
+                <div class="indicator-title">Curah Hujan</div>
+                <div class="indicator-value warning"><span class="value">45.2</span> <span class="unit">mm</span></div>
+                <div class="indicator-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill warning" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="indicator-status warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    TINGGI
+                </div>
+            </div>
+            <div class="indicator">
+                <div class="indicator-title">Kelembaban Tanah</div>
+                <div class="indicator-value warning"><span class="value">78</span><span class="unit">%</span></div>
+                <div class="indicator-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill warning" style="width: 78%"></div>
+                    </div>
+                </div>
+                <div class="indicator-status warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                    TINGGI
+                </div>
+            </div>
+            <div class="indicator">
+                <div class="indicator-title">Kemiringan Tanah</div>
+                <div class="indicator-value safe"><span class="value">12</span><span class="unit">°</span></div>
+                <div class="indicator-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill safe" style="width: 40%"></div>
+                    </div>
+                </div>
+                <div class="indicator-status safe">
+                    <i class="fas fa-check-circle"></i>
+                    NORMAL
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Device Status -->
+    <div class="section-title">
+        <h3>Status Perangkat</h3>
+        <p>Monitoring kondisi sensor dan perangkat IoT</p>
+    </div>
+    <div class="devices-section">
+        <div class="device-card">
+            <div class="device-icon online">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <div class="device-info">
+                <div class="device-name">NodeMCU ESP8266</div>
+                <div class="device-status online">Online</div>
+            </div>
+            <div class="device-actions">
+                <button class="device-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="device-card">
+            <div class="device-icon online">
+                <i class="fas fa-tint"></i>
+            </div>
+            <div class="device-info">
+                <div class="device-name">Rain Sensor</div>
+                <div class="device-status online">Online</div>
+            </div>
+            <div class="device-actions">
+                <button class="device-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="device-card">
+            <div class="device-icon online">
+                <i class="fas fa-seedling"></i>
+            </div>
+            <div class="device-info">
+                <div class="device-name">Soil Moisture</div>
+                <div class="device-status online">Online</div>
+            </div>
+            <div class="device-actions">
+                <button class="device-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="device-card">
+            <div class="device-icon online">
+                <i class="fas fa-balance-scale"></i>
+            </div>
+            <div class="device-info">
+                <div class="device-name">MPU6050</div>
+                <div class="device-status online">Online</div>
+            </div>
+            <div class="device-actions">
+                <button class="device-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="device-card">
+            <div class="device-icon online">
+                <i class="fas fa-temperature-low"></i>
+            </div>
+            <div class="device-info">
+                <div class="device-name">DHT11</div>
+                <div class="device-status online">Online</div>
+            </div>
+            <div class="device-actions">
+                <button class="device-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Modal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .test-container h1 {
+            color: #2563eb;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .test-container p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .test-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .test-button:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .test-button:active {
+            transform: translateY(0);
+        }
+
+        /* Modal Styles - Sama seperti di index.html */
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal[aria-hidden="false"],
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+        }
+
+        .modal-panel {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            width: min(850px, 90%);
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 18px 50px rgba(17, 24, 39, 0.25);
+            padding: 20px;
+            z-index: 2;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h2 {
+            font-weight: 800;
+            color: #1f2937;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #999;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #2563eb;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            color: #666;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .modal-body p {
+            margin-bottom: 16px;
+        }
+
+        .about-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .about-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .about-section h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .about-section h4 {
+            font-size: 1.02rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-top: 14px;
+            margin-bottom: 10px;
+        }
+
+        .about-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 12px 0;
+        }
+
+        .about-list li {
+            padding: 8px 0 8px 28px;
+            position: relative;
+            color: #666;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .about-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .member-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 18px 10px 14px 10px;
+            text-align: center;
+            transition: box-shadow 0.2s;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .member-card:hover {
+            box-shadow: 0 8px 32px rgba(44,123,229,0.13);
+            background: #e3ebf6;
+            transform: translateY(-5px);
+        }
+
+        .member-photo {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            aspect-ratio: 1/1;
+            border-radius: 50%;
+            box-shadow: 0 6px 18px rgba(44,123,229,0.15);
+            border: 2.5px solid #2563eb;
+            background: #fffbeb;
+            transition: transform 0.25s cubic-bezier(.4,2,.3,1), box-shadow 0.25s;
+            margin-bottom: 8px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .member-card:hover .member-photo {
+            transform: scale(1.05) rotate(-2deg);
+            box-shadow: 0 12px 28px rgba(44,123,229,0.18);
+            border-color: #1e40af;
+        }
+
+        .member-name {
+            font-weight: 700;
+            color: #1e40af;
+            font-size: 1.02rem;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .member-role {
+            font-size: 0.92rem;
+            color: #999;
+            font-weight: 500;
+            margin-bottom: 2px;
+            letter-spacing: 0.2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Test Modal Button</h1>
+        <p>Klik tombol di bawah untuk membuka modal "Tentang". Ini adalah test sederhana untuk memverifikasi bahwa modal bekerja dengan baik sebelum integrasi ke aplikasi utama.</p>
+        <button class="test-button" onclick="openAboutModal()">Buka Modal Tentang</button>
+    </div>
+
+    <!-- Modal Test -->
+    <div id="aboutModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="aboutTitle">
+        <div class="modal-overlay" data-close="true" onclick="event.stopPropagation(); closeAboutModal(); return false;"></div>
+        <div class="modal-panel" role="document">
+            <header class="modal-header">
+                <h2 id="aboutTitle">Tentang SICURAH</h2>
+                <button class="modal-close" aria-label="Close about dialog" onclick="event.preventDefault(); closeAboutModal(); return false;">&times;</button>
+            </header>
+            <div class="modal-body">
+                <div class="about-section">
+                    <h3>📋 Tentang Proyek</h3>
+                    <p><strong>SICURAH</strong> adalah singkatan dari <strong>Sistem Monitoring Curah Hujan dan Kelembaban Tanah</strong>. Sistem ini dirancang untuk memantau kondisi lingkungan secara real-time dengan tujuan utama mendeteksi dini potensi terjadinya tanah longsor.</p>
+                    
+                    <h4>Fitur Utama:</h4>
+                    <ul class="about-list">
+                        <li><strong>Dashboard Real-time:</strong> Menampilkan data sensor curah hujan, kelembaban tanah, dan kemiringan tanah secara langsung</li>
+                        <li><strong>Data Historis:</strong> Analisis tren data sensor dalam bentuk grafik interaktif untuk melihat pola dan perubahan kondisi</li>
+                        <li><strong>Peta Lokasi:</strong> Visualisasi lokasi-lokasi monitoring untuk melihat sebaran sensor di lapangan</li>
+                        <li><strong>Sistem Notifikasi:</strong> Peringatan otomatis ketika kondisi mencapai level waspada atau bahaya</li>
+                        <li><strong>Status Sistem:</strong> Monitoring kesehatan perangkat sensor dan konektivitas sistem</li>
+                    </ul>
+                    
+                    <h4>Target Pengguna:</h4>
+                    <p>Sistem ini ditujukan untuk pemerintah lokal, badan mitigasi bencana, dan masyarakat di daerah rawan longsor untuk meningkatkan kesiapsiagaan dalam menghadapi bencana alam.</p>
+                </div>
+
+                <div class="about-section">
+                    <h3>👥 Tim Pembuat</h3>
+                    <p style="margin-bottom: 16px;">Proyek ini dikembangkan oleh tim mahasiswa Program Studi Teknologi Informasi, STMIK Widya Pratama, Palu:</p>
+                    <div class="team-grid">
+                        <div class="member-card">
+                            <img src="https://ui-avatars.com/api/?name=Rima+Dwi&background=2c7be5&color=fff" alt="Rima Dwi Puspitasari" class="member-photo">
+                            <div class="member-name">Rima Dwi Puspitasari</div>
+                            <div class="member-role">NPM: 2315061038</div>
+                        </div>
+                        <div class="member-card">
+                            <img src="https://ui-avatars.com/api/?name=Cindy+Puji&background=2c7be5&color=fff" alt="Cindy Puji Lestari" class="member-photo">
+                            <div class="member-name">Cindy Puji Lestari</div>
+                            <div class="member-role">NPM: 2315061042</div>
+                        </div>
+                        <div class="member-card">
+                            <img src="https://ui-avatars.com/api/?name=Raissa&background=2c7be5&color=fff" alt="Raissa Syahputra" class="member-photo">
+                            <div class="member-name">Raissa Syahputra</div>
+                            <div class="member-role">NPM: 2315061106</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="about-section">
+                    <h3>🎓 Informasi Tambahan</h3>
+                    <p><strong>Program:</strong> Program Studi Teknologi Informasi (PSTI B)</p>
+                    <p><strong>Institusi:</strong> STMIK Widya Pratama, Palu</p>
+                    <p><strong>Kelompok:</strong> Kelompok 9</p>
+                    <p style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;"><em>Sistem ini dikembangkan sebagai bagian dari proyek akademik untuk menerapkan konsep Internet of Things (IoT) dan web development dalam solusi monitoring lingkungan yang praktis dan berguna bagi masyarakat.</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function untuk buka modal
+        function openAboutModal() {
+            console.log('openAboutModal called');
+            const modal = document.getElementById('aboutModal');
+            if (modal) {
+                modal.classList.add('open');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        // Function untuk tutup modal
+        function closeAboutModal() {
+            console.log('closeAboutModal called');
+            const modal = document.getElementById('aboutModal');
+            if (modal) {
+                modal.classList.remove('open');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        // ESC key untuk tutup modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeAboutModal();
+            }
+        });
+    </script>
+</body>
+</html>
