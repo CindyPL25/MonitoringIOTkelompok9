@@ -1,3 +1,7 @@
+// ========== API CONFIGURATION ==========
+const API_BASE_URL = '../api'; // Path relatif karena file ada di folder web
+const USE_REAL_DATA = true; // Set false untuk kembali ke dummy data
+
 // Small runtime error overlay to help troubleshoot issues in the browser
 (function installErrorOverlay(){
     function showError(text) {
@@ -344,7 +348,203 @@ function generateDummyHistoryData() {
     return { labels, series: { rain: makeSeries(baseRain, 10), soil: makeSeries(baseSoil, 6), tilt: makeSeries(baseTilt, 3), temp: makeSeries(baseTemp, 2) } };
 }
 
-// Simulasi update data real-time
+// ========== API FETCH FUNCTIONS ==========
+
+async function fetchSensorData() {
+    if (!USE_REAL_DATA) {
+        updateData(); // Fallback ke dummy data
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/get_data.php`);
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✓ Data sensor berhasil diambil:', result.data);
+            updateDashboardWithRealData(result.data);
+        } else {
+            console.error('Error dari server:', result.error);
+            updateData(); // Fallback ke dummy data
+        }
+    } catch (error) {
+        console.error('Error fetching sensor data:', error);
+        updateData(); // Fallback ke dummy data
+    }
+}
+
+async function fetchNodesData() {
+    if (!USE_REAL_DATA) {
+        renderDummyLocations();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/get_nodes.php`);
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✓ Data nodes berhasil diambil:', result.data.total_nodes, 'nodes');
+            renderRealLocations(result.data.nodes);
+        } else {
+            renderDummyLocations();
+        }
+    } catch (error) {
+        console.error('Error fetching nodes:', error);
+        renderDummyLocations();
+    }
+}
+
+async function fetchNotifications() {
+    if (!USE_REAL_DATA) {
+        renderDummyNotifications();
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/get_notifications.php?limit=20`);
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('✓ Notifikasi berhasil diambil:', result.data.summary.total, 'notifications');
+            renderRealNotifications(result.data.notifications);
+        } else {
+            renderDummyNotifications();
+        }
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+        renderDummyNotifications();
+    }
+}
+
+// Update dashboard dengan data real dari API
+function updateDashboardWithRealData(data) {
+    const { summary, nodes } = data;
+    
+    // Update stat cards
+    const statValues = document.querySelectorAll('.stat-value');
+    if (statValues[0]) statValues[0].textContent = summary.total_nodes || 0;
+    if (statValues[1]) statValues[1].textContent = summary.online_nodes || 0;
+    if (statValues[2]) statValues[2].textContent = summary.danger_sensors || 0;
+    
+    // Jika ada data nodes, update sensor cards
+    if (nodes && nodes.length > 0) {
+        const firstNode = nodes[0];
+        if (firstNode.sensors && firstNode.sensors.length > 0) {
+            const sensorData = {};
+            firstNode.sensors.forEach(sensor => {
+                sensorData[sensor.type] = sensor.value;
+            });
+            
+            const cardValueEls = document.querySelectorAll('.card .value');
+            if (cardValueEls[0] && sensorData['rain'] !== undefined) {
+                cardValueEls[0].textContent = Math.round(sensorData['rain']);
+            }
+            if (cardValueEls[1] && sensorData['soil_moisture'] !== undefined) {
+                cardValueEls[1].textContent = Math.round(sensorData['soil_moisture']);
+            }
+            if (cardValueEls[2] && sensorData['tilt'] !== undefined) {
+                cardValueEls[2].textContent = Math.round(sensorData['tilt']);
+            }
+            if (cardValueEls[3] && sensorData['temperature'] !== undefined) {
+                cardValueEls[3].textContent = Math.round(sensorData['temperature']);
+            }
+            
+            const cardProgressFills = document.querySelectorAll('.cards-grid .progress-fill');
+            if (cardProgressFills[0] && sensorData['rain']) {
+                cardProgressFills[0].style.width = `${Math.min(sensorData['rain'], 100)}%`;
+            }
+            if (cardProgressFills[1] && sensorData['soil_moisture']) {
+                cardProgressFills[1].style.width = `${sensorData['soil_moisture']}%`;
+            }
+            if (cardProgressFills[2] && sensorData['tilt']) {
+                cardProgressFills[2].style.width = `${Math.min(sensorData['tilt'] * 5, 100)}%`;
+            }
+            
+            updateStatus(
+                sensorData['rain'] || 0,
+                sensorData['soil_moisture'] || 0,
+                sensorData['tilt'] || 0
+            );
+        }
+    }
+    
+    document.querySelectorAll('.update-time').forEach(el => {
+        el.innerHTML = '<i class="far fa-clock"></i> Update: Baru saja';
+    });
+}
+
+// Render lokasi nodes dengan data real
+function renderRealLocations(nodes) {
+    const container = document.getElementById('locationsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (!nodes || nodes.length === 0) {
+        container.innerHTML = '<p style="text-align:center;padding:20px;">Tidak ada data lokasi</p>';
+        return;
+    }
+    
+    nodes.forEach(node => {
+        const card = document.createElement('div');
+        card.className = 'location-card';
+        const sensorValues = {};
+        if (node.sensors) {
+            node.sensors.forEach(s => { sensorValues[s.type] = s.value; });
+        }
+        
+        card.innerHTML = `
+            <div style="display:flex;justify-content:space-between;">
+                <div>
+                    <div class="location-title">${node.node_name || node.node_code}</div>
+                    <div class="location-meta">${node.location || ''}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="device-status ${node.status}">${node.status.toUpperCase()}</div>
+                    <div class="location-meta">${node.last_seen_ago || ''}</div>
+                </div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:12px;">
+                <div style="font-size:0.9rem;">Hujan: <strong>${Math.round(sensorValues['rain'] || 0)} mm</strong></div>
+                <div style="font-size:0.9rem;">Tanah: <strong>${Math.round(sensorValues['soil_moisture'] || 0)}%</strong></div>
+                <div style="font-size:0.9rem;">Tilt: <strong>${Math.round(sensorValues['tilt'] || 0)}°</strong></div>
+            </div>`;
+        container.appendChild(card);
+    });
+}
+
+// Render notifikasi dengan data real
+function renderRealNotifications(notifications) {
+    const container = document.querySelector('.notification-list');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (!notifications || notifications.length === 0) {
+        container.innerHTML = '<p style="text-align:center;padding:20px;">Tidak ada notifikasi</p>';
+        return;
+    }
+    
+    notifications.forEach(notif => {
+        const item = document.createElement('div');
+        item.className = `notification-item ${notif.level}`;
+        
+        let icon = '<i class="fas fa-info-circle"></i>';
+        if (notif.level === 'warning') icon = '<i class="fas fa-exclamation-triangle"></i>';
+        if (notif.level === 'danger') icon = '<i class="fas fa-exclamation-circle"></i>';
+        
+        item.innerHTML = `
+            <div class="notification-icon">${icon}</div>
+            <div class="notification-content">
+                <div class="notification-title">${notif.node_name || notif.node_code}</div>
+                <div class="notification-text">${notif.message}</div>
+                <div class="notification-time">${notif.time_ago || notif.created_at}</div>
+            </div>`;
+        
+        container.appendChild(item);
+    });
+}
+
+// Simulasi update data real-time (fallback)
 function updateData() {
     // Simulasi perubahan data
     const rainValue = Math.floor(Math.random() * 10) + 40;
@@ -615,16 +815,37 @@ function startApp() {
     showView('dashboard');
     // Update date time every minute
     setInterval(updateDateTime, 60000);
-    // Update data every 10 seconds (simulasi)
-    setInterval(updateData, 10000);
-    // Initial data update
-    updateData();
-    // Render dummy content for extra views
-    // generate and render dummy history summary (so history view has content)
-    const dummyHistory = generateDummyHistoryData();
-    renderDummyHistoryList(dummyHistory.labels, dummyHistory.series);
-    renderDummyLocations();
-    renderDummyNotifications();
+    
+    // ========== USE REAL DATA OR DUMMY DATA ==========
+    if (USE_REAL_DATA) {
+        console.log('✓ Using REAL data from API');
+        // Initial data fetch
+        fetchSensorData();
+        fetchNodesData();
+        fetchNotifications();
+        
+        // Auto update every 60 seconds (1 menit)
+        setInterval(() => {
+            fetchSensorData();
+            fetchNotifications();
+        }, 60000);
+        
+        // Update nodes every 2 minutes
+        setInterval(() => {
+            fetchNodesData();
+        }, 120000);
+    } else {
+        console.log('✓ Using DUMMY data (simulation mode)');
+        // Update data every 10 seconds (simulasi)
+        setInterval(updateData, 10000);
+        // Initial data update
+        updateData();
+        // Render dummy content for extra views
+        const dummyHistory = generateDummyHistoryData();
+        renderDummyHistoryList(dummyHistory.labels, dummyHistory.series);
+        renderDummyLocations();
+        renderDummyNotifications();
+    }
 }
 
 // Initialize the application

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SICURAH - API Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .test-card h2 {
+            color: #2c7be5;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e7ff;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .test-btn:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
+        }
+        
+        .result.success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+        
+        .result.error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .status.success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .status.error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .status.loading {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .info-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .info-box h3 {
+            color: #2c7be5;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+        
+        .info-box li {
+            padding: 8px 0;
+            color: #475569;
+        }
+        
+        .info-box li::before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 SICURAH - API Test Panel</h1>
+        
+        <div class="info-box">
+            <h3>Panduan Testing API</h3>
+            <p>Klik tombol di bawah untuk menguji setiap endpoint API. Pastikan XAMPP (Apache & MySQL) sudah berjalan dan database sudah diimport.</p>
+            <ul>
+                <li>Database harus sudah diimport ke MySQL (sicurah_db)</li>
+                <li>Apache dan MySQL di XAMPP harus aktif</li>
+                <li>Response JSON akan ditampilkan di bawah setiap tombol</li>
+                <li>Hijau = Success, Merah = Error</li>
+            </ul>
+        </div>
+        
+        <div class="test-grid">
+            <!-- Test 1: Get Data -->
+            <div class="test-card">
+                <h2>1. Get Sensor Data</h2>
+                <p style="color:#64748b;font-size:0.9rem;margin-bottom:15px;">
+                    Endpoint: <code>/api/get_data.php</code><br>
+                    Mengambil data sensor terbaru dari semua node
+                </p>
+                <button class="test-btn" onclick="testGetData()">Test Get Data</button>
+                <div id="status1" class="status" style="display:none;"></div>
+                <div id="result1" class="result"></div>
+            </div>
+            
+            <!-- Test 2: Get History -->
+            <div class="test-card">
+                <h2>2. Get History Data</h2>
+                <p style="color:#64748b;font-size:0.9rem;margin-bottom:15px;">
+                    Endpoint: <code>/api/get_history.php</code><br>
+                    Mengambil data historis sensor (24 jam terakhir)
+                </p>
+                <button class="test-btn" onclick="testGetHistory()">Test Get History</button>
+                <div id="status2" class="status" style="display:none;"></div>
+                <div id="result2" class="result"></div>
+            </div>
+            
+            <!-- Test 3: Get Nodes -->
+            <div class="test-card">
+                <h2>3. Get Nodes/Locations</h2>
+                <p style="color:#64748b;font-size:0.9rem;margin-bottom:15px;">
+                    Endpoint: <code>/api/get_nodes.php</code><br>
+                    Mengambil semua lokasi node dengan status sensor
+                </p>
+                <button class="test-btn" onclick="testGetNodes()">Test Get Nodes</button>
+                <div id="status3" class="status" style="display:none;"></div>
+                <div id="result3" class="result"></div>
+            </div>
+            
+            <!-- Test 4: Get Notifications -->
+            <div class="test-card">
+                <h2>4. Get Notifications</h2>
+                <p style="color:#64748b;font-size:0.9rem;margin-bottom:15px;">
+                    Endpoint: <code>/api/get_notifications.php</code><br>
+                    Mengambil notifikasi/alert sistem
+                </p>
+                <button class="test-btn" onclick="testGetNotifications()">Test Get Notifications</button>
+                <div id="status4" class="status" style="display:none;"></div>
+                <div id="result4" class="result"></div>
+            </div>
+            
+            <!-- Test 5: Post Reading -->
+            <div class="test-card">
+                <h2>5. Post Sensor Reading</h2>
+                <p style="color:#64748b;font-size:0.9rem;margin-bottom:15px;">
+                    Endpoint: <code>/api/post_reading.php</code><br>
+                    Simulasi pengiriman data dari IoT device
+                </p>
+                <button class="test-btn" onclick="testPostReading()">Test Post Reading</button>
+                <div id="status5" class="status" style="display:none;"></div>
+                <div id="result5" class="result"></div>
+            </div>
+            
+            <!-- Test All -->
+            <div class="test-card" style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;">
+                <h2 style="color:white;border-color:rgba(255,255,255,0.3);">Run All Tests</h2>
+                <p style="color:rgba(255,255,255,0.9);font-size:0.9rem;margin-bottom:15px;">
+                    Jalankan semua test endpoints sekaligus
+                </p>
+                <button class="test-btn" style="background:white;color:#764ba2;" onclick="testAll()">Run All Tests</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Database: MonitoringIOT
+        const API_BASE = 'http://localhost/MonitoringIOT/api';
+        
+        async function testEndpoint(number, url, method = 'GET', body = null) {
+            const statusEl = document.getElementById(`status${number}`);
+            const resultEl = document.getElementById(`result${number}`);
+            
+            statusEl.style.display = 'inline-block';
+            statusEl.className = 'status loading';
+            statusEl.textContent = 'Loading...';
+            
+            resultEl.style.display = 'block';
+            resultEl.className = 'result';
+            resultEl.textContent = 'Sending request...';
+            
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+                
+                const response = await fetch(url, options);
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✓ Success';
+                    resultEl.className = 'result success';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '✗ Error';
+                    resultEl.className = 'result error';
+                }
+                
+                resultEl.textContent = JSON.stringify(data, null, 2);
+                
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '✗ Failed';
+                resultEl.className = 'result error';
+                resultEl.textContent = `Error: ${error.message}\n\nPastikan:\n1. XAMPP (Apache & MySQL) sudah berjalan\n2. Database sudah diimport\n3. URL API benar`;
+            }
+        }
+        
+        function testGetData() {
+            testEndpoint(1, `${API_BASE}/get_data.php`);
+        }
+        
+        function testGetHistory() {
+            testEndpoint(2, `${API_BASE}/get_history.php?hours=24`);
+        }
+        
+        function testGetNodes() {
+            testEndpoint(3, `${API_BASE}/get_nodes.php`);
+        }
+        
+        function testGetNotifications() {
+            testEndpoint(4, `${API_BASE}/get_notifications.php?limit=10`);
+        }
+        
+        function testPostReading() {
+            const payload = {
+                node_id: 'Node-1',
+                api_key: 'SICURAH_2024_SECRET_KEY',
+                readings: [
+                    { sensor_type: 'rain', value: 52.5 },
+                    { sensor_type: 'soil_moisture', value: 82.3 },
+                    { sensor_type: 'tilt', value: 13.2 },
+                    { sensor_type: 'temperature', value: 28.7 }
+                ]
+            };
+            
+            testEndpoint(5, `${API_BASE}/post_reading.php`, 'POST', payload);
+        }
+        
+        async function testAll() {
+            testGetData();
+            await new Promise(r => setTimeout(r, 500));
+            testGetHistory();
+            await new Promise(r => setTimeout(r, 500));
+            testGetNodes();
+            await new Promise(r => setTimeout(r, 500));
+            testGetNotifications();
+            await new Promise(r => setTimeout(r, 500));
+            testPostReading();
+        }
+    </script>
+</body>
+</html>
